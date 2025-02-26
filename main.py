@@ -18,7 +18,8 @@ class MyGame(arcade.Window):
         super().__init__(width, height, title)
 
         arcade.set_background_color(arcade.color.SMOKY_BLACK)
-        self.sprite_list = arcade.SpriteList()
+        self.sprite_list_statique = arcade.SpriteList()
+        self.sprite_list_dynamique = arcade.SpriteList()
         self.player_sprite = arcade.Sprite("assets/faceBeard.png", 0.3, SCREEN_WIDTH / 4, 300)
         self.ordinateur_sprite = arcade.Sprite("assets/compy.png", 1.5, SCREEN_WIDTH * 0.75, 300)
         self.roche_animation = AttackAnimation(AttackType.ROCK)
@@ -31,11 +32,11 @@ class MyGame(arcade.Window):
         self.ciseaux_animation.center_x = SCREEN_WIDTH / 4 + 150
         self.ciseaux_animation.center_y = 170
 
-        self.sprite_list.append(self.player_sprite)
-        self.sprite_list.append(self.ordinateur_sprite)
-        self.sprite_list.append(self.roche_animation)
-        self.sprite_list.append(self.papier_animation)
-        self.sprite_list.append(self.ciseaux_animation)
+        self.sprite_list_statique.append(self.player_sprite)
+        self.sprite_list_statique.append(self.ordinateur_sprite)
+        self.sprite_list_dynamique.append(self.roche_animation)
+        self.sprite_list_dynamique.append(self.papier_animation)
+        self.sprite_list_dynamique.append(self.ciseaux_animation)
 
         self.etat_jeu = game_state.GameState.NOT_STARTED
         self.player_attack_type = ""
@@ -66,8 +67,8 @@ class MyGame(arcade.Window):
         arcade.draw_circle_outline(SCREEN_WIDTH / 4 + 150, 170, 70, arcade.color.RED, tilt_angle=45, num_segments=4)
         arcade.draw_circle_outline(SCREEN_WIDTH * 0.75, 170, 70, arcade.color.RED, tilt_angle=45, num_segments=4)
 
-        # dessine les sprites ------
-        self.sprite_list.draw()
+        # dessine les sprites statiques ------
+        self.sprite_list_statique.draw()
 
     def on_update(self, delta_time: float):
         pass
