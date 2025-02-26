@@ -5,6 +5,7 @@ Jeu de roche papier ciseaux
 """
 
 import arcade
+import attack_animation
 
 
 SCREEN_WIDTH = 1000
@@ -14,12 +15,15 @@ SCREEN_TITLE = "Jeu de roche papier ciseaux"
 class MyGame(arcade.Window):
     def __init__(self, width, height, title):
         super().__init__(width, height, title)
+
         arcade.set_background_color(arcade.color.SMOKY_BLACK)
         self.sprite_list = arcade.SpriteList()
         self.player_sprite = arcade.Sprite("assets/faceBeard.png", 0.3, SCREEN_WIDTH / 4, 300)
         self.ordinateur_sprite = arcade.Sprite("assets/compy.png", 1.5, SCREEN_WIDTH * 0.75, 300)
+        self.roche_animation = attack_animation.AttackAnimation(attack_type=attack_animation.AttackType.ROCK)
         self.sprite_list.append(self.player_sprite)
         self.sprite_list.append(self.ordinateur_sprite)
+        self.sprite_list.append(self.roche_animation)
 
     def on_draw(self):
         self.clear()
@@ -49,6 +53,9 @@ class MyGame(arcade.Window):
 
         # dessine les sprites ------
         self.sprite_list.draw()
+
+    def on_update(self, delta_time: float) -> bool | None:
+        pass
 
 
 def main():
