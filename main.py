@@ -88,38 +88,38 @@ class MyGame(arcade.Window):
                                              SCREEN_HEIGHT - 170, arcade.color.BLIZZARD_BLUE, 40, align="center",
                                              anchor_x="center", multiline=True, width=900)
             rules_round_active.draw()
-            if self.ordinateur_attack_type == "roche":
+            if self.ordinateur_attack_type == AttackType.ROCK:
                 self.sprite_roche_ordi.draw()
-            elif self.ordinateur_attack_type == "papier":
+            elif self.ordinateur_attack_type == AttackType.PAPER:
                 self.sprite_papier_ordi.draw()
-            elif self.ordinateur_attack_type == "ciseaux":
+            elif self.ordinateur_attack_type == AttackType.SCISSORS:
                 self.sprite_ciseaux_ordi.draw()
 
     def on_update(self, delta_time: float):
         self.player_attack_type = ""
         if self.etat_jeu == game_state.GameState.ROUND_ACTIVE:
             # détermine qui gagne ou perd un point
-            if self.player_attack_type == self.attack_list[0] and self.ordinateur_attack_type == self.attack_list[1]:
+            if self.player_attack_type == AttackType.ROCK and self.ordinateur_attack_type == AttackType.PAPER:
                 self.ordinateur_points += 1
                 print("vous avez perdu(e)")
                 pass
-            elif self.player_attack_type == self.attack_list[0] and self.ordinateur_attack_type == self.attack_list[2]:
+            elif self.player_attack_type == AttackType.ROCK and self.ordinateur_attack_type == AttackType.SCISSORS:
                 self.player_points += 1
                 print("vous avez gagné(e)")
                 pass
-            elif self.player_attack_type == self.attack_list[1] and self.ordinateur_attack_type == self.attack_list[0]:
+            elif self.player_attack_type == AttackType.PAPER and self.ordinateur_attack_type == AttackType.ROCK:
                 self.player_points += 1
                 print("vous avez gagné(e)")
                 pass
-            elif self.player_attack_type == self.attack_list[1] and self.ordinateur_attack_type == self.attack_list[2]:
+            elif self.player_attack_type == AttackType.PAPER and self.ordinateur_attack_type == AttackType.SCISSORS:
                 self.ordinateur_points += 1
                 print("vous avez perdu(e)")
                 pass
-            elif self.player_attack_type == self.attack_list[2] and self.ordinateur_attack_type == self.attack_list[0]:
+            elif self.player_attack_type == AttackType.SCISSORS and self.ordinateur_attack_type == AttackType.ROCK:
                 self.ordinateur_points += 1
                 print("vous avez perdu(e)")
                 pass
-            elif self.player_attack_type == self.attack_list[2] and self.ordinateur_attack_type == self.attack_list[1]:
+            elif self.player_attack_type == AttackType.SCISSORS and self.ordinateur_attack_type == AttackType.PAPER:
                 self.player_points += 1
                 print("vous avez gagné(e)")
                 pass
@@ -139,13 +139,13 @@ class MyGame(arcade.Window):
     def on_mouse_press(self, x: int, y: int, button: int, modifiers: int):
         if self.roche_animation.collides_with_point((x, y)):
             print("vous avez toucher la roche")
-            self.player_attack_type = self.attack_list[0]
+            self.player_attack_type = AttackType.ROCK
         elif self.papier_animation.collides_with_point((x, y)):
             print("vous avez toucher le papier")
-            self.player_attack_type = self.attack_list[1]
+            self.player_attack_type = AttackType.PAPER
         elif self.ciseaux_animation.collides_with_point((x, y)):
             print("vous avez toucher les ciseaux")
-            self.player_attack_type = self.attack_list[2]
+            self.player_attack_type = AttackType.SCISSORS
 
 
 def main():
