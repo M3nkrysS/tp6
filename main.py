@@ -52,7 +52,7 @@ class MyGame(arcade.Window):
         self.player_points = 0
         self.ordinateur_points = 0
         self.attack_list = [AttackType.ROCK, AttackType.PAPER, AttackType.SCISSORS]
-        self.ordinateur_attack_type = choice(self.attack_list)
+        self.ordinateur_attack_type = ""
         self.player_attack_type = ""
 
     def on_draw(self):
@@ -83,11 +83,13 @@ class MyGame(arcade.Window):
         # dessinne les sprites qui change ------
         self.sprite_list_dynamique.draw()
 
-        if self.etat_jeu == game_state.GameState.ROUND_ACTIVE:
-            rules_round_active = arcade.Text("Appuyer sur une image pour faire une attaque!", SCREEN_WIDTH / 2,
+        if self.etat_jeu == game_state.GameState.NOT_STARTED:
+            rules_not_started = arcade.Text("Appuyer sur une image pour faire une attaque!", SCREEN_WIDTH / 2,
                                              SCREEN_HEIGHT - 170, arcade.color.BLIZZARD_BLUE, 40, align="center",
                                              anchor_x="center", multiline=True, width=900)
-            rules_round_active.draw()
+            rules_not_started.draw()
+        elif self.etat_jeu == game_state.GameState.ROUND_DONE:
+            # dessine le type d'attaque de l'ordinateur
             if self.ordinateur_attack_type == AttackType.ROCK:
                 self.sprite_roche_ordi.draw()
             elif self.ordinateur_attack_type == AttackType.PAPER:
@@ -95,8 +97,10 @@ class MyGame(arcade.Window):
             elif self.ordinateur_attack_type == AttackType.SCISSORS:
                 self.sprite_ciseaux_ordi.draw()
 
+
     def on_update(self, delta_time: float = 1 / 60):
         if self.etat_jeu == game_state.GameState.ROUND_ACTIVE:
+            self.ordinateur_attack_type = choice(self.attack_list)
             # détermine qui gagne ou perd un point
             if self.player_attack_type == AttackType.ROCK and self.ordinateur_attack_type == AttackType.PAPER:
                 self.ordinateur_points += 1
@@ -123,29 +127,34 @@ class MyGame(arcade.Window):
                 print("vous avez gagné(e)")
                 pass
             else:
+                print("match null")
                 pass
             self.etat_jeu = game_state.GameState.ROUND_DONE
             self.player_attack_type = ""
 
     def on_key_press(self, symbol: int, modifiers: int):
-        if (self.etat_jeu == game_state.GameState.NOT_STARTED
-                or self.etat_jeu == game_state.GameState.GAME_OVER
+        if (self.etat_jeu == game_state.GameState.GAME_OVER
                 or self.etat_jeu == game_state.GameState.ROUND_DONE
                 and symbol == arcade.key.SPACE):
-            self.etat_jeu = game_state.GameState.ROUND_ACTIVE
+            self.etat_jeu = game_state.GameState.NOT_STARTED
 
         print(self.etat_jeu)
 
     def on_mouse_press(self, x: int, y: int, button: int, modifiers: int):
-        if self.roche_animation.collides_with_point((x, y)):
-            print("vous avez toucher la roche")
-            self.player_attack_type = AttackType.ROCK
-        elif self.papier_animation.collides_with_point((x, y)):
-            print("vous avez toucher le papier")
-            self.player_attack_type = AttackType.PAPER
-        elif self.ciseaux_animation.collides_with_point((x, y)):
-            print("vous avez toucher les ciseaux")
-            self.player_attack_type = AttackType.SCISSORS
+        if (self.roche_animation.collides_with_point((x, y))
+           or self.papier_animation.collides_with_point((x, y))
+           or self.ciseaux_animation.collides_with_point((x, y))):
+            if self.etat_jeu == game_state.GameState.NOT_STARTED:
+                self.etat_jeu = game_state.GameState.ROUND_ACTIVE
+                if self.roche_animation.collides_with_point((x, y)):
+                    print("vous avez toucher la roche")
+                    self.player_attack_type = AttackType.ROCK
+                elif self.papier_animation.collides_with_point((x, y)):
+                    print("vous avez toucher le papier")
+                    self.player_attack_type = AttackType.PAPER
+                elif self.ciseaux_animation.collides_with_point((x, y)):
+                    print("vous avez toucher les ciseaux")
+                    self.player_attack_type = AttackType.SCISSORS
 
 
 def main():
