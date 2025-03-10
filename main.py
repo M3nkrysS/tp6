@@ -95,8 +95,7 @@ class MyGame(arcade.Window):
             elif self.ordinateur_attack_type == AttackType.SCISSORS:
                 self.sprite_ciseaux_ordi.draw()
 
-    def on_update(self, delta_time: float):
-        self.player_attack_type = ""
+    def on_update(self, delta_time: float = 1 / 60):
         if self.etat_jeu == game_state.GameState.ROUND_ACTIVE:
             # détermine qui gagne ou perd un point
             if self.player_attack_type == AttackType.ROCK and self.ordinateur_attack_type == AttackType.PAPER:
@@ -125,7 +124,8 @@ class MyGame(arcade.Window):
                 pass
             else:
                 pass
-            # self.etat_jeu = game_state.GameState.ROUND_DONE
+            self.etat_jeu = game_state.GameState.ROUND_DONE
+            self.player_attack_type = ""
 
     def on_key_press(self, symbol: int, modifiers: int):
         if (self.etat_jeu == game_state.GameState.NOT_STARTED
