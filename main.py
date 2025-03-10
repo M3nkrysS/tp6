@@ -51,7 +51,7 @@ class MyGame(arcade.Window):
         self.etat_jeu = game_state.GameState.NOT_STARTED
         self.player_points = 0
         self.ordinateur_points = 0
-        self.attack_list = ["roche", "papier", "ciseaux"]
+        self.attack_list = [AttackType.ROCK, AttackType.PAPER, AttackType.SCISSORS]
         self.ordinateur_attack_type = choice(self.attack_list)
         self.player_attack_type = ""
 
