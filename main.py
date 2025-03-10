@@ -3,15 +3,16 @@ Lucas B. Tinkler
 Groupe : 401
 Jeu de roche papier ciseaux
 """
-
 import arcade
 from attack_animation import AttackAnimation, AttackType
 import game_state
+from random import choice
 
 
 SCREEN_WIDTH = 1000
 SCREEN_HEIGHT = 800
 SCREEN_TITLE = "Jeu de roche papier ciseaux"
+
 
 class MyGame(arcade.Window):
     def __init__(self, width, height, title):
@@ -20,8 +21,14 @@ class MyGame(arcade.Window):
         arcade.set_background_color(arcade.color.SMOKY_BLACK)
         self.sprite_list_statique = arcade.SpriteList()
         self.sprite_list_dynamique = arcade.SpriteList()
+        self.sprite_roche_ordi = arcade.SpriteList()
+        self.sprite_papier_ordi = arcade.SpriteList()
+        self.sprite_ciseaux_ordi = arcade.SpriteList()
         self.player_sprite = arcade.Sprite("assets/faceBeard.png", 0.3, SCREEN_WIDTH / 4, 300)
         self.ordinateur_sprite = arcade.Sprite("assets/compy.png", 1.5, SCREEN_WIDTH * 0.75, 300)
+        self.roche_ordi = arcade.Sprite("assets/srock-attack.png", 1, SCREEN_WIDTH * 0.75, 170)
+        self.papier_ordi = arcade.Sprite("assets/spaper.png", 1, SCREEN_WIDTH * 0.75, 170)
+        self.ciseaux_ordi = arcade.Sprite("assets/scissors.png", 1, SCREEN_WIDTH * 0.75, 170)
         self.roche_animation = AttackAnimation(AttackType.ROCK)
         self.roche_animation.center_x = SCREEN_WIDTH / 4 - 150
         self.roche_animation.center_y = 170
@@ -37,8 +44,15 @@ class MyGame(arcade.Window):
         self.sprite_list_dynamique.append(self.roche_animation)
         self.sprite_list_dynamique.append(self.papier_animation)
         self.sprite_list_dynamique.append(self.ciseaux_animation)
+        self.sprite_roche_ordi.append(self.roche_ordi)
+        self.sprite_papier_ordi.append(self.papier_ordi)
+        self.sprite_ciseaux_ordi.append(self.ciseaux_ordi)
 
         self.etat_jeu = game_state.GameState.NOT_STARTED
+        self.player_points = 0
+        self.ordinateur_points = 0
+        self.attack_list = ["roche", "papier", "ciseaux"]
+        self.ordinateur_attack_type = choice(self.attack_list)
         self.player_attack_type = ""
 
     def on_draw(self):
@@ -46,18 +60,14 @@ class MyGame(arcade.Window):
         # dessine le texte ------
         title = arcade.Text("Roche, Papier, Ciseaux", SCREEN_WIDTH / 2, SCREEN_HEIGHT - 100, arcade.color.RED_BROWN,
                             70, anchor_x="center")
-        rules_round_active = arcade.Text("Appuyer sur une image pour faire une attaque!", SCREEN_WIDTH / 2,
-                                         SCREEN_HEIGHT - 170, arcade.color.BLIZZARD_BLUE, 40, align="center",
-                                         anchor_x="center", multiline=True, width=900)
-        pointage_joueur = arcade.Text("Le pointage du joueur est", SCREEN_WIDTH / 4,
+        pointage_joueur = arcade.Text(f"Le pointage du joueur est: {self.player_points}", SCREEN_WIDTH / 4,
                                       70, arcade.color.DARK_PASTEL_GREEN, 20,
                                       anchor_x="center")
-        pointage_ordinateur = arcade.Text("Le pointage de l'ordinateur est", SCREEN_WIDTH * 0.75,
+        pointage_ordinateur = arcade.Text(f"Le pointage de l'ordinateur est: {self.ordinateur_points}", SCREEN_WIDTH * 0.75,
                                           70, arcade.color.BLIZZARD_BLUE, 20,
                                           anchor_x="center")
 
         title.draw()
-        rules_round_active.draw()
         pointage_joueur.draw()
         pointage_ordinateur.draw()
 
@@ -70,8 +80,52 @@ class MyGame(arcade.Window):
         # dessine les sprites statiques ------
         self.sprite_list_statique.draw()
 
+        # dessinne les sprites qui change ------
+        self.sprite_list_dynamique.draw()
+
+        if self.etat_jeu == game_state.GameState.ROUND_ACTIVE:
+            rules_round_active = arcade.Text("Appuyer sur une image pour faire une attaque!", SCREEN_WIDTH / 2,
+                                             SCREEN_HEIGHT - 170, arcade.color.BLIZZARD_BLUE, 40, align="center",
+                                             anchor_x="center", multiline=True, width=900)
+            rules_round_active.draw()
+            if self.ordinateur_attack_type == "roche":
+                self.sprite_roche_ordi.draw()
+            elif self.ordinateur_attack_type == "papier":
+                self.sprite_papier_ordi.draw()
+            elif self.ordinateur_attack_type == "ciseaux":
+                self.sprite_ciseaux_ordi.draw()
+
     def on_update(self, delta_time: float):
-        pass
+        self.player_attack_type = ""
+        if self.etat_jeu == game_state.GameState.ROUND_ACTIVE:
+            # détermine qui gagne ou perd un point
+            if self.player_attack_type == self.attack_list[0] and self.ordinateur_attack_type == self.attack_list[1]:
+                self.ordinateur_points += 1
+                print("vous avez perdu(e)")
+                pass
+            elif self.player_attack_type == self.attack_list[0] and self.ordinateur_attack_type == self.attack_list[2]:
+                self.player_points += 1
+                print("vous avez gagné(e)")
+                pass
+            elif self.player_attack_type == self.attack_list[1] and self.ordinateur_attack_type == self.attack_list[0]:
+                self.player_points += 1
+                print("vous avez gagné(e)")
+                pass
+            elif self.player_attack_type == self.attack_list[1] and self.ordinateur_attack_type == self.attack_list[2]:
+                self.ordinateur_points += 1
+                print("vous avez perdu(e)")
+                pass
+            elif self.player_attack_type == self.attack_list[2] and self.ordinateur_attack_type == self.attack_list[0]:
+                self.ordinateur_points += 1
+                print("vous avez perdu(e)")
+                pass
+            elif self.player_attack_type == self.attack_list[2] and self.ordinateur_attack_type == self.attack_list[1]:
+                self.player_points += 1
+                print("vous avez gagné(e)")
+                pass
+            else:
+                pass
+            # self.etat_jeu = game_state.GameState.ROUND_DONE
 
     def on_key_press(self, symbol: int, modifiers: int):
         if (self.etat_jeu == game_state.GameState.NOT_STARTED
@@ -80,21 +134,18 @@ class MyGame(arcade.Window):
                 and symbol == arcade.key.SPACE):
             self.etat_jeu = game_state.GameState.ROUND_ACTIVE
 
-        if self.etat_jeu == game_state.GameState.ROUND_ACTIVE:
-            pass
-
         print(self.etat_jeu)
 
     def on_mouse_press(self, x: int, y: int, button: int, modifiers: int):
         if self.roche_animation.collides_with_point((x, y)):
             print("vous avez toucher la roche")
-            self.player_attack_type = "Rock"
+            self.player_attack_type = self.attack_list[0]
         elif self.papier_animation.collides_with_point((x, y)):
             print("vous avez toucher le papier")
-            self.player_attack_type = "Papier"
+            self.player_attack_type = self.attack_list[1]
         elif self.ciseaux_animation.collides_with_point((x, y)):
             print("vous avez toucher les ciseaux")
-            self.player_attack_type = "Scisors"
+            self.player_attack_type = self.attack_list[2]
 
 
 def main():
