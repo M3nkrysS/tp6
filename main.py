@@ -80,7 +80,7 @@ class MyGame(arcade.Window):
         # dessine les sprites statiques ------
         self.sprite_list_statique.draw()
 
-        # dessinne les sprites qui change ------
+        # dessine les sprites qui change ------
         self.sprite_list_dynamique.draw()
 
         if self.etat_jeu == game_state.GameState.NOT_STARTED:
@@ -97,6 +97,20 @@ class MyGame(arcade.Window):
             elif self.ordinateur_attack_type == AttackType.SCISSORS:
                 self.sprite_ciseaux_ordi.draw()
 
+            # dessine qui gagne un point
+            if (self.player_attack_type == AttackType.ROCK and self.ordinateur_attack_type == AttackType.SCISSORS
+                    or self.player_attack_type == AttackType.PAPER and self.ordinateur_attack_type == AttackType.ROCK
+                    or self.player_attack_type == AttackType.SCISSORS and self.ordinateur_attack_type == AttackType.PAPER):
+                point_to_player = arcade.Text("+1", SCREEN_WIDTH / 4, 400, arcade.color.GREEN, 40)
+                point_to_player.draw()
+            elif (self.player_attack_type == AttackType.ROCK and self.ordinateur_attack_type == AttackType.PAPER
+                    or self.player_attack_type == AttackType.PAPER and self.ordinateur_attack_type == AttackType.SCISSORS
+                    or self.player_attack_type == AttackType.SCISSORS and self.ordinateur_attack_type == AttackType.ROCK):
+                point_to_ordi = arcade.Text("+1", SCREEN_WIDTH * 0.75, 400, arcade.color.GREEN, 40)
+                point_to_ordi.draw()
+            else:
+                tie = arcade.Text("Match Null", SCREEN_WIDTH / 2, SCREEN_HEIGHT - 170, arcade.color.GREEN, 40)
+                tie.draw()
 
     def on_update(self, delta_time: float = 1 / 60):
         if self.etat_jeu == game_state.GameState.ROUND_ACTIVE:
