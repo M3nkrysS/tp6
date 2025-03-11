@@ -120,7 +120,7 @@ class MyGame(arcade.Window):
                 tie.draw()
 
         elif self.etat_jeu == game_state.GameState.GAME_OVER:
-            game_over = arcade.Text("GAME OVER", SCREEN_WIDTH / 2, SCREEN_HEIGHT - 220, arcade.color.RED_DEVIL,
+            game_over = arcade.Text("GAME OVER", SCREEN_WIDTH / 2, SCREEN_HEIGHT - 220, arcade.color.BONDI_BLUE,
                                     90, align="center", bold=True, anchor_x="center")
             game_over.draw()
             if self.player_points == 3:
@@ -188,14 +188,14 @@ class MyGame(arcade.Window):
         if self.etat_jeu == game_state.GameState.ROUND_DONE:
             if self.player_points == 3 or self.ordinateur_points == 3:
                 self.etat_jeu = game_state.GameState.GAME_OVER
-                self.player_points = 0
-                self.ordinateur_points = 0
 
     def on_key_press(self, symbol: int, modifiers: int):
-        if (self.etat_jeu == game_state.GameState.GAME_OVER
-                or self.etat_jeu == game_state.GameState.ROUND_DONE):
-            if symbol == arcade.key.SPACE:
-                self.etat_jeu = game_state.GameState.NOT_STARTED
+        if self.etat_jeu == game_state.GameState.ROUND_DONE and symbol == arcade.key.SPACE:
+            self.etat_jeu = game_state.GameState.NOT_STARTED
+        elif self.etat_jeu == game_state.GameState.GAME_OVER and symbol == arcade.key.SPACE:
+            self.etat_jeu = game_state.GameState.NOT_STARTED
+            self.player_points = 0
+            self.ordinateur_points = 0
 
         print(self.etat_jeu)
 
