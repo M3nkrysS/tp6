@@ -5,6 +5,8 @@ Jeu de roche papier ciseaux
 """
 # commit didnt wark
 import arcade
+
+import attack_animation
 from attack_animation import AttackAnimation, AttackType
 import game_state
 from random import choice
@@ -20,16 +22,16 @@ class MyGame(arcade.Window):
         super().__init__(width, height, title)
 
         arcade.set_background_color(arcade.color.SMOKY_BLACK)
+        # listes de sprites
         self.sprite_list_statique = arcade.SpriteList()
-        self.sprite_list_dynamique = arcade.SpriteList()
-        self.sprite_roche_ordi = arcade.SpriteList()
-        self.sprite_papier_ordi = arcade.SpriteList()
-        self.sprite_ciseaux_ordi = arcade.SpriteList()
+        self.sprite_roche_animation = arcade.SpriteList()
+        self.sprite_papier_animation = arcade.SpriteList()
+        self.sprite_ciseaux_animation = arcade.SpriteList()
+
+        # sprites
         self.player_sprite = arcade.Sprite("assets/faceBeard.png", 0.3, SCREEN_WIDTH / 4, 300)
         self.ordinateur_sprite = arcade.Sprite("assets/compy.png", 1.5, SCREEN_WIDTH * 0.75, 300)
-        self.roche_ordi = arcade.Sprite("assets/srock-attack.png", 0.7, SCREEN_WIDTH * 0.75, 170)
-        self.papier_ordi = arcade.Sprite("assets/spaper.png", 0.7, SCREEN_WIDTH * 0.75, 170)
-        self.ciseaux_ordi = arcade.Sprite("assets/scissors.png", 0.7, SCREEN_WIDTH * 0.75, 170)
+        # sprites d'animations
         self.roche_animation = AttackAnimation(AttackType.ROCK)
         self.roche_animation.center_x = SCREEN_WIDTH / 4 - 150
         self.roche_animation.center_y = 170
@@ -42,12 +44,9 @@ class MyGame(arcade.Window):
 
         self.sprite_list_statique.append(self.player_sprite)
         self.sprite_list_statique.append(self.ordinateur_sprite)
-        self.sprite_list_dynamique.append(self.roche_animation)
-        self.sprite_list_dynamique.append(self.papier_animation)
-        self.sprite_list_dynamique.append(self.ciseaux_animation)
-        self.sprite_roche_ordi.append(self.roche_ordi)
-        self.sprite_papier_ordi.append(self.papier_ordi)
-        self.sprite_ciseaux_ordi.append(self.ciseaux_ordi)
+        self.sprite_roche_animation.append(self.roche_animation)
+        self.sprite_papier_animation.append(self.papier_animation)
+        self.sprite_ciseaux_animation.append(self.ciseaux_animation)
 
         self.etat_jeu = game_state.GameState.NOT_STARTED
         self.player_points = 0
@@ -83,9 +82,20 @@ class MyGame(arcade.Window):
         self.sprite_list_statique.draw()
 
         # dessine les sprites qui change ------
-        self.sprite_list_dynamique.draw()
+        self.sprite_roche_animation.draw()
+        self.sprite_papier_animation.draw()
+        self.sprite_ciseaux_animation.draw()
 
         if self.etat_jeu == game_state.GameState.NOT_STARTED:
+            # réinitialise le placement des sprites
+            self.roche_animation.center_x = SCREEN_WIDTH / 4 - 150
+            self.roche_animation.center_y = 170
+            self.papier_animation.center_x = SCREEN_WIDTH / 4
+            self.papier_animation.center_y = 170
+            self.ciseaux_animation.center_x = SCREEN_WIDTH / 4 + 150
+            self.ciseaux_animation.center_y = 170
+
+            # dessine les règles
             rules_not_started = arcade.Text("Appuyer sur une image pour faire une attaque!", SCREEN_WIDTH / 2,
                                              SCREEN_HEIGHT - 170, arcade.color.BLIZZARD_BLUE, 40, align="center",
                                              anchor_x="center", multiline=True, width=900)
@@ -99,11 +109,17 @@ class MyGame(arcade.Window):
 
             # dessine le type d'attaque de l'ordinateur
             if self.ordinateur_attack_type == AttackType.ROCK:
-                self.sprite_roche_ordi.draw()
+                self.roche_animation.center_x = SCREEN_WIDTH * 0.75
+                self.roche_animation.center_y = 170
+                self.sprite_roche_animation.draw()
             elif self.ordinateur_attack_type == AttackType.PAPER:
-                self.sprite_papier_ordi.draw()
+                self.papier_animation.center_x = SCREEN_WIDTH * 0.75
+                self.papier_animation.center_y = 170
+                self.sprite_papier_animation.draw()
             elif self.ordinateur_attack_type == AttackType.SCISSORS:
-                self.sprite_ciseaux_ordi.draw()
+                self.ciseaux_animation.center_x = SCREEN_WIDTH * 0.75
+                self.ciseaux_animation.center_y = 170
+                self.sprite_ciseaux_animation.draw()
 
             # dessine qui gagne un point
             if self.win == "player":
@@ -120,6 +136,7 @@ class MyGame(arcade.Window):
                 tie.draw()
 
         elif self.etat_jeu == game_state.GameState.GAME_OVER:
+            # montre si le joueur a gagné ou perdu
             game_over = arcade.Text("GAME OVER", SCREEN_WIDTH / 2, SCREEN_HEIGHT - 220, arcade.color.BONDI_BLUE,
                                     90, align="center", bold=True, anchor_x="center")
             game_over.draw()
@@ -132,20 +149,33 @@ class MyGame(arcade.Window):
                                             50, align="center", anchor_x="center")
                 game_over_win.draw()
 
+            # dessine la dernière attaque de l'ordinateur
             if self.ordinateur_attack_type == AttackType.ROCK:
-                self.sprite_roche_ordi.draw()
+                self.roche_animation.center_x = SCREEN_WIDTH * 0.75
+                self.roche_animation.center_y = 170
+                self.sprite_roche_animation.draw()
             elif self.ordinateur_attack_type == AttackType.PAPER:
-                self.sprite_papier_ordi.draw()
+                self.papier_animation.center_x = SCREEN_WIDTH * 0.75
+                self.papier_animation.center_y = 170
+                self.sprite_papier_animation.draw()
             elif self.ordinateur_attack_type == AttackType.SCISSORS:
-                self.sprite_ciseaux_ordi.draw()
+                self.ciseaux_animation.center_x = SCREEN_WIDTH * 0.75
+                self.ciseaux_animation.center_y = 170
+                self.sprite_ciseaux_animation.draw()
 
+            # affiche les règles pour lancer une nouvelle partie
             rules_game_over = arcade.Text("Appuyez sur [Espace] pour relancer une partie", SCREEN_WIDTH / 2, 400,
                                           arcade.color.BLIZZARD_BLUE, 40, align="center",anchor_x="center",
                                           multiline=True, width=900)
             rules_game_over.draw()
 
     def on_update(self, delta_time: float = 1 / 60):
-        if self.etat_jeu == game_state.GameState.ROUND_ACTIVE:
+        if self.etat_jeu == game_state.GameState.NOT_STARTED:
+            self.roche_animation.on_update()
+            self.papier_animation.on_update()
+            self.ciseaux_animation.on_update()
+
+        elif self.etat_jeu == game_state.GameState.ROUND_ACTIVE:
             self.ordinateur_attack_type = choice(self.attack_list)
             # détermine qui gagne ou perd un point
             if self.player_attack_type == AttackType.ROCK and self.ordinateur_attack_type == AttackType.PAPER:

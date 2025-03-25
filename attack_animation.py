@@ -53,10 +53,3 @@ class AttackAnimation(arcade.Sprite):
             self.current_texture = 0
             self.set_texture(self.current_texture)
          self.time_since_last_swap = 0.0
-
-      self.current_texture += 1
-      if self.current_texture < len(self.textures):
-         self.set_texture(self.current_texture)
-      else:
-         self.current_texture = 0
-         self.set_texture(self.current_texture)
