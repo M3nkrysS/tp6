@@ -44,6 +44,9 @@ class MyGame(arcade.Window):
 
         self.sprite_list_statique.append(self.player_sprite)
         self.sprite_list_statique.append(self.ordinateur_sprite)
+        self.sprite_attack_player.append(self.roche_animation)
+        self.sprite_attack_player.append(self.papier_animation)
+        self.sprite_attack_player.append(self.ciseaux_animation)
 
         self.etat_jeu = game_state.GameState.NOT_STARTED
         self.player_points = 0
@@ -51,7 +54,8 @@ class MyGame(arcade.Window):
         self.attack_list = [AttackType.ROCK, AttackType.PAPER, AttackType.SCISSORS]
         self.ordinateur_attack_type = ""
         self.player_attack_type = ""
-        self.win = "player"
+        self.win = ""
+        self.determine = True
 
     def on_draw(self):
         self.clear()
@@ -63,8 +67,8 @@ class MyGame(arcade.Window):
         pointage_joueur = arcade.Text(f"Le pointage du joueur est: {self.player_points}", SCREEN_WIDTH / 4,
                                       70, arcade.color.DARK_PASTEL_GREEN, 20,
                                       anchor_x="center")
-        pointage_ordinateur = arcade.Text(f"Le pointage de l'ordinateur est: {self.ordinateur_points}", SCREEN_WIDTH * 0.75,
-                                          70, arcade.color.RUSTY_RED, 20,
+        pointage_ordinateur = arcade.Text(f"Le pointage de l'ordinateur est: {self.ordinateur_points}",
+                                          SCREEN_WIDTH * 0.75, 70, arcade.color.RUSTY_RED, 20,
                                           anchor_x="center")
 
         title.draw()
@@ -81,19 +85,22 @@ class MyGame(arcade.Window):
         self.sprite_list_statique.draw()
 
         if self.etat_jeu == game_state.GameState.NOT_STARTED:
-            # dessine les règles
-            rules_not_started = arcade.Text("Appuyer sur une image pour faire une attaque!", SCREEN_WIDTH / 2,
-                                             SCREEN_HEIGHT - 170, arcade.color.BLIZZARD_BLUE, 40, align="center",
-                                             anchor_x="center", multiline=True, width=900)
+            rules_not_started = arcade.Text("Appuyer sur [Espace] pour commencer la partie", SCREEN_WIDTH / 2,
+                                            SCREEN_HEIGHT - 170, arcade.color.BLIZZARD_BLUE, 40, align="center",
+                                            anchor_x="center", multiline=True, width=900)
             rules_not_started.draw()
-#---------- reset les sprite du joueur
-            if len(self.sprite_attack_player) < 3:
-                pass
+
+        elif self.etat_jeu == game_state.GameState.ROUND_ACTIVE:
+            # dessine les règles
+            rules_started = arcade.Text("Appuyer sur une image pour faire une attaque!", SCREEN_WIDTH / 2,
+                                        SCREEN_HEIGHT - 170, arcade.color.BLIZZARD_BLUE, 40, align="center",
+                                        anchor_x="center", multiline=True, width=900)
+            rules_started.draw()
 
         elif self.etat_jeu == game_state.GameState.ROUND_DONE:
             rules_round_done = arcade.Text("Appuyez sur [Espace] pour lancer la prochaine manche", SCREEN_WIDTH / 2,
-                                             SCREEN_HEIGHT - 170, arcade.color.BLIZZARD_BLUE, 40, align="center",
-                                             anchor_x="center", multiline=True, width=900)
+                                           SCREEN_HEIGHT - 170, arcade.color.BLIZZARD_BLUE, 40, align="center",
+                                           anchor_x="center", multiline=True, width=900)
             rules_round_done.draw()
 
             # dessine le type d'attaque de l'ordinateur
@@ -102,16 +109,19 @@ class MyGame(arcade.Window):
             # dessine qui gagne un point
             if self.win == "player":
                 point_to_player = arcade.Text("+1", SCREEN_WIDTH / 4, 400, arcade.color.GREEN, 40, align="center",
-                                             anchor_x="center")
+                                              anchor_x="center")
                 point_to_player.draw()
             elif self.win == "ordi":
                 point_to_ordi = arcade.Text("+1", SCREEN_WIDTH * 0.75, 400, arcade.color.RED, 40, align="center",
-                                             anchor_x="center")
+                                            anchor_x="center")
                 point_to_ordi.draw()
-            else:
+            elif self.win == "match null":
                 tie = arcade.Text("Match Nul", SCREEN_WIDTH / 2, 450, arcade.color.AZURE, 49, align="center",
-                                             anchor_x="center")
+                                  anchor_x="center")
                 tie.draw()
+            else:
+                pass
+            self.win = ""
 
         elif self.etat_jeu == game_state.GameState.GAME_OVER:
             # montre si le joueur a gagné ou perdu
@@ -120,7 +130,7 @@ class MyGame(arcade.Window):
             game_over.draw()
             if self.player_points == 3:
                 game_over_win = arcade.Text("Vous avez gagné!", SCREEN_WIDTH / 2, 500, arcade.color.GREEN,
-                                            49, align="center",anchor_x="center")
+                                            49, align="center", anchor_x="center")
                 game_over_win.draw()
             elif self.ordinateur_points == 3:
                 game_over_win = arcade.Text("Vous avez perdu", SCREEN_WIDTH / 2, 500, arcade.color.RED,
@@ -154,74 +164,63 @@ class MyGame(arcade.Window):
 
             # affiche les règles pour lancer une nouvelle partie
             rules_game_over = arcade.Text("Appuyez sur [Espace] pour relancer une partie", SCREEN_WIDTH / 2, 400,
-                                          arcade.color.BLIZZARD_BLUE, 40, align="center",anchor_x="center",
+                                          arcade.color.BLIZZARD_BLUE, 40, align="center", anchor_x="center",
                                           multiline=True, width=900)
             rules_game_over.draw()
 
     def on_update(self, delta_time: float = 1 / 60):
         if self.etat_jeu == game_state.GameState.NOT_STARTED:
+            pass
+
+        elif self.etat_jeu == game_state.GameState.ROUND_ACTIVE:
             # reset les sprites de l'ordi
             self.sprite_attack_ordi.clear()
-
-            # reset les attaques du joueur
-            if 1 == len(self.sprite_attack_player):
-                if self.roche_ordi in self.sprite_attack_player:
-                    self.sprite_attack_player.append(self.papier_ordi)
-                    self.sprite_attack_player.append(self.ciseaux_ordi)
-                elif self.papier_ordi in self.sprite_attack_player:
-                    self.sprite_attack_player.append(self.roche_ordi)
-                    self.sprite_attack_player.append(self.ciseaux_ordi)
-                elif self.ciseaux_ordi in self.sprite_attack_player:
-                    self.sprite_attack_player.append(self.roche_ordi)
-                    self.sprite_attack_player.append(self.papier_ordi)
-
-            self.player_attack_type = ""
+            self.determine = True
 
             self.roche_animation.on_update()
             self.papier_animation.on_update()
             self.ciseaux_animation.on_update()
 
-        elif self.etat_jeu == game_state.GameState.ROUND_ACTIVE:
+        elif self.etat_jeu == game_state.GameState.ROUND_DONE:
             self.ordinateur_attack_type = choice(self.attack_list)
             # détermine qui gagne ou perd un point
-            if self.player_attack_type == AttackType.ROCK and self.ordinateur_attack_type == AttackType.PAPER:
-                self.ordinateur_points += 1
-                self.win = "ordi"
-                print("vous avez perdu(e)")
+            if self.determine:
+                if self.player_attack_type == AttackType.ROCK and self.ordinateur_attack_type == AttackType.PAPER:
+                    self.ordinateur_points += 1
+                    self.win = "ordi"
+                    print("vous avez perdu(e)")
 
-            elif self.player_attack_type == AttackType.ROCK and self.ordinateur_attack_type == AttackType.SCISSORS:
-                self.player_points += 1
-                self.win = "player"
-                print("vous avez gagné(e)")
+                elif self.player_attack_type == AttackType.ROCK and self.ordinateur_attack_type == AttackType.SCISSORS:
+                    self.player_points += 1
+                    self.win = "player"
+                    print("vous avez gagné(e)")
 
-            elif self.player_attack_type == AttackType.PAPER and self.ordinateur_attack_type == AttackType.ROCK:
-                self.player_points += 1
-                self.win = "player"
-                print("vous avez gagné(e)")
+                elif self.player_attack_type == AttackType.PAPER and self.ordinateur_attack_type == AttackType.ROCK:
+                    self.player_points += 1
+                    self.win = "player"
+                    print("vous avez gagné(e)")
 
-            elif self.player_attack_type == AttackType.PAPER and self.ordinateur_attack_type == AttackType.SCISSORS:
-                self.ordinateur_points += 1
-                self.win = "ordi"
-                print("vous avez perdu(e)")
+                elif self.player_attack_type == AttackType.PAPER and self.ordinateur_attack_type == AttackType.SCISSORS:
+                    self.ordinateur_points += 1
+                    self.win = "ordi"
+                    print("vous avez perdu(e)")
 
-            elif self.player_attack_type == AttackType.SCISSORS and self.ordinateur_attack_type == AttackType.ROCK:
-                self.ordinateur_points += 1
-                self.win = "ordi"
-                print("vous avez perdu(e)")
+                elif self.player_attack_type == AttackType.SCISSORS and self.ordinateur_attack_type == AttackType.ROCK:
+                    self.ordinateur_points += 1
+                    self.win = "ordi"
+                    print("vous avez perdu(e)")
 
-            elif self.player_attack_type == AttackType.SCISSORS and self.ordinateur_attack_type == AttackType.PAPER:
-                self.player_points += 1
-                self.win = "player"
-                print("vous avez gagné(e)")
+                elif self.player_attack_type == AttackType.SCISSORS and self.ordinateur_attack_type == AttackType.PAPER:
+                    self.player_points += 1
+                    self.win = "player"
+                    print("vous avez gagné(e)")
 
-            else:
-                self.win = "match null"
-                print("match null")
+                else:
+                    self.win = "match null"
+                    print("match null")
+                self.determine = False
 
-            self.etat_jeu = game_state.GameState.ROUND_DONE
-
-        if self.etat_jeu == game_state.GameState.ROUND_DONE:
-            # détermine l'attaque de l'ordi
+            # affiche l'attaque de l'ordi
             if 0 == len(self.sprite_attack_ordi):
                 if self.ordinateur_attack_type == AttackType.ROCK:
                     self.sprite_attack_ordi.append(self.roche_ordi)
@@ -232,30 +231,23 @@ class MyGame(arcade.Window):
             else:
                 pass
 
-            # détermine l'attaque du joueur
-            if len(self.sprite_attack_player) > 1:
-                if self.player_attack_type == AttackType.ROCK:
-                    self.sprite_attack_player.remove(self.papier_animation)
-                    self.sprite_attack_player.remove(self.ciseaux_animation)
-                elif self.player_attack_type == AttackType.PAPER:
-                    self.sprite_attack_player.remove(self.roche_animation)
-                    self.sprite_attack_player.remove(self.ciseaux_animation)
-                elif self.player_attack_type == AttackType.SCISSORS:
-                    self.sprite_attack_player.remove(self.roche_animation)
-                    self.sprite_attack_player.remove(self.papier_animation)
-            else:
-                pass
+            self.player_attack_type = ""
 
             if self.player_points == 3 or self.ordinateur_points == 3:
                 self.etat_jeu = game_state.GameState.GAME_OVER
 
     def on_key_press(self, symbol: int, modifiers: int):
-        if self.etat_jeu == game_state.GameState.ROUND_DONE and symbol == arcade.key.SPACE:
-            self.etat_jeu = game_state.GameState.NOT_STARTED
-        elif self.etat_jeu == game_state.GameState.GAME_OVER and symbol == arcade.key.SPACE:
-            self.etat_jeu = game_state.GameState.NOT_STARTED
-            self.player_points = 0
-            self.ordinateur_points = 0
+        if symbol == arcade.key.SPACE:
+            if self.etat_jeu == game_state.GameState.NOT_STARTED or self.etat_jeu == game_state.GameState.ROUND_DONE:
+                self.etat_jeu = game_state.GameState.ROUND_ACTIVE
+            elif self.etat_jeu == game_state.GameState.GAME_OVER:
+                self.etat_jeu = game_state.GameState.NOT_STARTED
+                self.player_points = 0
+                self.ordinateur_points = 0
+            else:
+                pass
+        else:
+            pass
 
         print(self.etat_jeu)
 
@@ -263,8 +255,8 @@ class MyGame(arcade.Window):
         if (self.roche_animation.collides_with_point((x, y))
            or self.papier_animation.collides_with_point((x, y))
            or self.ciseaux_animation.collides_with_point((x, y))):
-            if self.etat_jeu == game_state.GameState.NOT_STARTED:
-                self.etat_jeu = game_state.GameState.ROUND_ACTIVE
+            if self.etat_jeu == game_state.GameState.ROUND_ACTIVE:
+                self.etat_jeu = game_state.GameState.ROUND_DONE
                 if self.roche_animation.collides_with_point((x, y)):
                     print("vous avez toucher la roche")
                     self.player_attack_type = AttackType.ROCK
