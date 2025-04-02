@@ -121,7 +121,6 @@ class MyGame(arcade.Window):
                 tie.draw()
             else:
                 pass
-            self.win = ""
 
         elif self.etat_jeu == game_state.GameState.GAME_OVER:
             # montre si le joueur a gagné ou perdu
@@ -148,20 +147,6 @@ class MyGame(arcade.Window):
             else:
                 self.sprite_attack_ordi.draw()
 
-            # affiche la dernière attaque du joueur
-            if len(self.sprite_attack_player) > 1:
-                if self.player_attack_type == AttackType.ROCK:
-                    self.sprite_attack_player.remove(self.papier_animation)
-                    self.sprite_attack_player.remove(self.ciseaux_animation)
-                elif self.player_attack_type == AttackType.PAPER:
-                    self.sprite_attack_player.remove(self.roche_animation)
-                    self.sprite_attack_player.remove(self.ciseaux_animation)
-                elif self.player_attack_type == AttackType.SCISSORS:
-                    self.sprite_attack_player.remove(self.roche_animation)
-                    self.sprite_attack_player.remove(self.papier_animation)
-            else:
-                self.sprite_attack_player.draw()
-
             # affiche les règles pour lancer une nouvelle partie
             rules_game_over = arcade.Text("Appuyez sur [Espace] pour relancer une partie", SCREEN_WIDTH / 2, 400,
                                           arcade.color.BLIZZARD_BLUE, 40, align="center", anchor_x="center",
@@ -169,6 +154,10 @@ class MyGame(arcade.Window):
             rules_game_over.draw()
 
     def on_update(self, delta_time: float = 1 / 60):
+        if self.etat_jeu == game_state.GameState.NOT_STARTED or self.etat_jeu == game_state.GameState.ROUND_ACTIVE:
+            self.roche_animation.on_update()
+            self.papier_animation.on_update()
+            self.ciseaux_animation.on_update()
         if self.etat_jeu == game_state.GameState.NOT_STARTED:
             pass
 
@@ -176,10 +165,6 @@ class MyGame(arcade.Window):
             # reset les sprites de l'ordi
             self.sprite_attack_ordi.clear()
             self.determine = True
-
-            self.roche_animation.on_update()
-            self.papier_animation.on_update()
-            self.ciseaux_animation.on_update()
 
         elif self.etat_jeu == game_state.GameState.ROUND_DONE:
             self.ordinateur_attack_type = choice(self.attack_list)
