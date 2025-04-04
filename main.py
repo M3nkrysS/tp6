@@ -62,8 +62,9 @@ class MyGame(arcade.Window):
 
         self.sprite_attack_player.draw()
         # dessine le texte ------
+        # hand_font = arcade.load_font("handstand/Handstand.ttf")
         title = arcade.Text("Roche, Papier, Ciseaux", SCREEN_WIDTH / 2, SCREEN_HEIGHT - 100, arcade.color.RED_BROWN,
-                            70, anchor_x="center")
+                            60, font_name="", anchor_x="center")
         pointage_joueur = arcade.Text(f"Le pointage du joueur est: {self.player_points}", SCREEN_WIDTH / 4,
                                       70, arcade.color.DARK_PASTEL_GREEN, 20,
                                       anchor_x="center")
@@ -158,8 +159,6 @@ class MyGame(arcade.Window):
             self.roche_animation.on_update()
             self.papier_animation.on_update()
             self.ciseaux_animation.on_update()
-        if self.etat_jeu == game_state.GameState.NOT_STARTED:
-            pass
 
         elif self.etat_jeu == game_state.GameState.ROUND_ACTIVE:
             # reset les sprites de l'ordi
