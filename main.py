@@ -65,11 +65,11 @@ class MyGame(arcade.Window):
         title = arcade.Text("Roche, Papier, Ciseaux", SCREEN_WIDTH / 2, SCREEN_HEIGHT - 100, arcade.color.RED_BROWN,
                             70, font_name="Handstand", anchor_x="center")
         pointage_joueur = arcade.Text(f"Le pointage du joueur est: {self.player_points}", SCREEN_WIDTH / 4,
-                                      70, arcade.color.DARK_PASTEL_GREEN, 20,
-                                      anchor_x="center")
+                                      70, arcade.color.DARK_PASTEL_GREEN, 19, anchor_x="center",
+                                      font_name="Pixelout Personal Use Only")
         pointage_ordinateur = arcade.Text(f"Le pointage de l'ordinateur est: {self.ordinateur_points}",
-                                          SCREEN_WIDTH * 0.75, 70, arcade.color.RUSTY_RED, 20,
-                                          anchor_x="center")
+                                          SCREEN_WIDTH * 0.75, 70, arcade.color.RUSTY_RED, 19, anchor_x="center",
+                                          font_name="Pixelout Personal Use Only")
 
         title.draw()
         pointage_joueur.draw()
@@ -86,21 +86,24 @@ class MyGame(arcade.Window):
 
         if self.etat_jeu == game_state.GameState.NOT_STARTED:
             rules_not_started = arcade.Text("Appuyer sur [Espace] pour commencer la partie", SCREEN_WIDTH / 2,
-                                            SCREEN_HEIGHT - 170, arcade.color.BLIZZARD_BLUE, 40, align="center",
-                                            anchor_x="center", multiline=True, width=900)
+                                            SCREEN_HEIGHT - 170, arcade.color.BLIZZARD_BLUE, 40,
+                                            align="center", anchor_x="center", multiline=True, width=900,
+                                            font_name="Pixelout Personal Use Only")
             rules_not_started.draw()
 
         elif self.etat_jeu == game_state.GameState.ROUND_ACTIVE:
             # dessine les règles
             rules_started = arcade.Text("Appuyer sur une image pour faire une attaque!", SCREEN_WIDTH / 2,
                                         SCREEN_HEIGHT - 170, arcade.color.BLIZZARD_BLUE, 40, align="center",
-                                        anchor_x="center", multiline=True, width=900)
+                                        anchor_x="center", multiline=True, width=900,
+                                        font_name="Pixelout Personal Use Only")
             rules_started.draw()
 
         elif self.etat_jeu == game_state.GameState.ROUND_DONE:
             rules_round_done = arcade.Text("Appuyez sur [Espace] pour lancer la prochaine manche", SCREEN_WIDTH / 2,
                                            SCREEN_HEIGHT - 170, arcade.color.BLIZZARD_BLUE, 40, align="center",
-                                           anchor_x="center", multiline=True, width=900)
+                                           anchor_x="center", multiline=True, width=900,
+                                           font_name="Pixelout Personal Use Only")
             rules_round_done.draw()
 
             # dessine le type d'attaque de l'ordinateur
@@ -126,16 +129,19 @@ class MyGame(arcade.Window):
             self.sprite_attack_ordi.clear()
 
             # montre si le joueur a gagné ou perdu
-            game_over = arcade.Text("GAME OVER", SCREEN_WIDTH / 2, SCREEN_HEIGHT - 220, arcade.color.BONDI_BLUE,
-                                    90, align="center", bold=True, anchor_x="center")
+            game_over = arcade.Text("GAME OVER", SCREEN_WIDTH / 2, SCREEN_HEIGHT - 230, arcade.color.BANANA_MANIA,
+                                    80, align="center", bold=True, anchor_x="center",
+                                    font_name="Gameplay")
             game_over.draw()
             if self.player_points == 3:
-                game_over_win = arcade.Text("Vous avez gagné!", SCREEN_WIDTH / 2, 500, arcade.color.GREEN,
-                                            49, align="center", anchor_x="center")
+                game_over_win = arcade.Text("Vous avez gagné!", SCREEN_WIDTH / 2, 485, arcade.color.GREEN,
+                                            49, align="center", anchor_x="center",
+                                            font_name="Pixelout Personal Use Only")
                 game_over_win.draw()
             elif self.ordinateur_points == 3:
-                game_over_win = arcade.Text("Vous avez perdu", SCREEN_WIDTH / 2, 500, arcade.color.RED,
-                                            50, align="center", anchor_x="center")
+                game_over_win = arcade.Text("Vous avez perdu", SCREEN_WIDTH / 2, 485, arcade.color.RED,
+                                            50, align="center", anchor_x="center",
+                                            font_name="Pixelout Personal Use Only")
                 game_over_win.draw()
 
             # dessine la dernière attaque de l'ordinateur
@@ -148,9 +154,9 @@ class MyGame(arcade.Window):
             self.sprite_attack_ordi.draw()
 
             # affiche les règles pour lancer une nouvelle partie
-            rules_game_over = arcade.Text("Appuyez sur [Espace] pour relancer une partie", SCREEN_WIDTH / 2, 400,
+            rules_game_over = arcade.Text("Appuyez sur [Espace] pour relancer une partie", SCREEN_WIDTH / 2, 410,
                                           arcade.color.BLIZZARD_BLUE, 40, align="center", anchor_x="center",
-                                          multiline=True, width=900)
+                                          multiline=True, width=900, font_name="Pixelout Personal Use Only")
             rules_game_over.draw()
 
     def on_update(self, delta_time: float = 1 / 60):
