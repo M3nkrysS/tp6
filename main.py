@@ -120,9 +120,11 @@ class MyGame(arcade.Window):
                                   anchor_x="center")
                 tie.draw()
             else:
-                pass
+                print("something went wrong")
 
         elif self.etat_jeu == game_state.GameState.GAME_OVER:
+            self.sprite_attack_ordi.clear()
+
             # montre si le joueur a gagné ou perdu
             game_over = arcade.Text("GAME OVER", SCREEN_WIDTH / 2, SCREEN_HEIGHT - 220, arcade.color.BONDI_BLUE,
                                     90, align="center", bold=True, anchor_x="center")
@@ -137,15 +139,13 @@ class MyGame(arcade.Window):
                 game_over_win.draw()
 
             # dessine la dernière attaque de l'ordinateur
-            if 0 == len(self.sprite_attack_ordi):
-                if self.ordinateur_attack_type == AttackType.ROCK:
-                    self.sprite_attack_ordi.append(self.roche_ordi)
-                elif self.ordinateur_attack_type == AttackType.PAPER:
-                    self.sprite_attack_ordi.append(self.papier_ordi)
-                elif self.ordinateur_attack_type == AttackType.SCISSORS:
-                    self.sprite_attack_ordi.append(self.ciseaux_ordi)
-            else:
-                self.sprite_attack_ordi.draw()
+            if self.ordinateur_attack_type == AttackType.ROCK:
+                self.sprite_attack_ordi.append(self.roche_ordi)
+            elif self.ordinateur_attack_type == AttackType.PAPER:
+                self.sprite_attack_ordi.append(self.papier_ordi)
+            elif self.ordinateur_attack_type == AttackType.SCISSORS:
+                self.sprite_attack_ordi.append(self.ciseaux_ordi)
+            self.sprite_attack_ordi.draw()
 
             # affiche les règles pour lancer une nouvelle partie
             rules_game_over = arcade.Text("Appuyez sur [Espace] pour relancer une partie", SCREEN_WIDTH / 2, 400,
@@ -154,20 +154,25 @@ class MyGame(arcade.Window):
             rules_game_over.draw()
 
     def on_update(self, delta_time: float = 1 / 60):
-        if self.etat_jeu == game_state.GameState.NOT_STARTED or self.etat_jeu == game_state.GameState.ROUND_ACTIVE:
-            self.roche_animation.on_update()
-            self.papier_animation.on_update()
-            self.ciseaux_animation.on_update()
-
-        elif self.etat_jeu == game_state.GameState.ROUND_ACTIVE:
+        if self.etat_jeu == game_state.GameState.ROUND_ACTIVE:
             # reset les sprites de l'ordi
             self.sprite_attack_ordi.clear()
             self.determine = True
 
+            # fait avancer les animations
+            self.roche_animation.on_update()
+            self.papier_animation.on_update()
+            self.ciseaux_animation.on_update()
+
         elif self.etat_jeu == game_state.GameState.ROUND_DONE:
-            self.ordinateur_attack_type = choice(self.attack_list)
+            # fait avancer les animations 2
+            self.roche_animation.on_update()
+            self.papier_animation.on_update()
+            self.ciseaux_animation.on_update()
+
             # détermine qui gagne ou perd un point
             if self.determine:
+                self.ordinateur_attack_type = choice(self.attack_list)
                 if self.player_attack_type == AttackType.ROCK and self.ordinateur_attack_type == AttackType.PAPER:
                     self.ordinateur_points += 1
                     self.win = "ordi"
@@ -201,7 +206,10 @@ class MyGame(arcade.Window):
                 else:
                     self.win = "match null"
                     print("match null")
+
                 self.determine = False
+
+            self.player_attack_type = ""
 
             # affiche l'attaque de l'ordi
             if 0 == len(self.sprite_attack_ordi):
@@ -213,8 +221,6 @@ class MyGame(arcade.Window):
                     self.sprite_attack_ordi.append(self.ciseaux_ordi)
             else:
                 pass
-
-            self.player_attack_type = ""
 
             if self.player_points == 3 or self.ordinateur_points == 3:
                 self.etat_jeu = game_state.GameState.GAME_OVER
