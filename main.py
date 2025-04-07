@@ -111,16 +111,19 @@ class MyGame(arcade.Window):
 
             # dessine qui gagne un point
             if self.win == "player":
-                point_to_player = arcade.Text("+1", SCREEN_WIDTH / 4, 400, arcade.color.GREEN, 40, align="center",
-                                              anchor_x="center")
+                point_to_player = arcade.Text("+1", SCREEN_WIDTH / 4, 400, arcade.color.GREEN, 40,
+                                              align="center", anchor_x="center",
+                                              font_name="Gameplay")
                 point_to_player.draw()
             elif self.win == "ordi":
-                point_to_ordi = arcade.Text("+1", SCREEN_WIDTH * 0.75, 400, arcade.color.RED, 40, align="center",
-                                            anchor_x="center")
+                point_to_ordi = arcade.Text("+1", SCREEN_WIDTH * 0.75, 400, arcade.color.RED, 40,
+                                            align="center", anchor_x="center",
+                                            font_name="Gameplay")
                 point_to_ordi.draw()
             elif self.win == "match null":
-                tie = arcade.Text("Match Nul", SCREEN_WIDTH / 2, 450, arcade.color.AZURE, 49, align="center",
-                                  anchor_x="center")
+                tie = arcade.Text("Match Nul", SCREEN_WIDTH / 2, 450, arcade.color.AZURE, 49,
+                                  align="center", anchor_x="center",
+                                  font_name="Gameplay")
                 tie.draw()
             else:
                 print("something went wrong")
